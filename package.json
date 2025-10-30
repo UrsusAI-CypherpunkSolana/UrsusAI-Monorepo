@@ -1,0 +1,45 @@
+{
+  "name": "ursus-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for URSUS AI Agent Platform on Core DAO",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network coreTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network coreMainnet",
+    "verify:testnet": "hardhat verify --network coreTestnet",
+    "verify:mainnet": "hardhat verify --network coreMainnet",
+    "node": "hardhat node",
+    "clean": "hardhat clean"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "core-dao",
+    "ai",
+    "defi",
+    "smart-contracts"
+  ],
+  "author": "URSUS Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@types/d3": "^5.16.7",
+    "compression": "^1.8.1",
+    "d3": "^5.16.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "lightweight-charts": "^5.0.8",
+    "multer": "^2.0.2",
+    "recharts": "^3.1.0",
+    "techan": "^0.8.0",
+    "winston": "^3.17.0"
+  }
+}
