@@ -386,7 +386,5 @@ UrsusAI is experimental software. Users should be aware:
 
 *Revolutionizing AI and DeFi on Solana*
 
-[Website](https://ursusai.io) • [Twitter](https://twitter.com/UrsusAI) • [Discord](https://discord.gg/ursusai)
-
 </div>
 
