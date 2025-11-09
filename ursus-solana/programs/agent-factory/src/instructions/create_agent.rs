@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
-use crate::state::{Agent, BondingCurve};
+use crate::state::BondingCurve;
 use crate::errors::AgentFactoryError;
 
 pub fn handler(

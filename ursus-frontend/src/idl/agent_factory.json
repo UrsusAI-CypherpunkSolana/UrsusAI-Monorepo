@@ -234,6 +234,214 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "configureX402",
+      "accounts": [
+        {
+          "name": "agent",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "x402Config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "minPaymentAmount",
+          "type": "u64"
+        },
+        {
+          "name": "maxPaymentAmount",
+          "type": "u64"
+        },
+        {
+          "name": "serviceTimeoutSeconds",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "updateX402",
+      "accounts": [
+        {
+          "name": "agent",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "x402Config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "minPaymentAmount",
+          "type": "u64"
+        },
+        {
+          "name": "maxPaymentAmount",
+          "type": "u64"
+        },
+        {
+          "name": "serviceTimeoutSeconds",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "payForService",
+      "accounts": [
+        {
+          "name": "agent",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "x402Config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "paymentRecord",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "payerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "recipientTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "serviceId",
+          "type": "string"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "callAgentService",
+      "accounts": [
+        {
+          "name": "callerAgent",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "targetAgent",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "targetX402Config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "paymentRecord",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "callerAuthority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "callerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "targetTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "serviceId",
+          "type": "string"
+        },
+        {
+          "name": "nonce",
+          "type": "u64"
+        },
+        {
+          "name": "serviceParams",
+          "type": "bytes"
+        }
+      ]
     }
   ],
   "accounts": [

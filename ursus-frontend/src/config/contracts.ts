@@ -1,15 +1,15 @@
 // Solana Program Addresses
-// Last updated: 2025-10-28
+// Last updated: 2025-11-09 (X402 Integration)
 
 export const SOLANA_PROGRAM_ADDRESSES = {
   TESTNET: {
-    PROGRAM_ID: "GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345",
-    FACTORY_PDA: "8N2Fv9CDy6q9a8kER5EP8u4gvSutu3s6wjFuyv7P7Qb9",
+    PROGRAM_ID: "4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU", // X402-enabled program
+    FACTORY_PDA: "CCxYQHRhg8powaDqWdp1PdcHM2PAJHBUsTaHx1uyDecJ",
     PLATFORM_TREASURY: "Hf37zaq9y5okWMxU3sW8Djhv3gd6iTy7mrSMfJcYxwQS",
   },
   DEVNET: {
-    PROGRAM_ID: "GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345",
-    FACTORY_PDA: "8N2Fv9CDy6q9a8kER5EP8u4gvSutu3s6wjFuyv7P7Qb9",
+    PROGRAM_ID: "4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU",
+    FACTORY_PDA: "CCxYQHRhg8powaDqWdp1PdcHM2PAJHBUsTaHx1uyDecJ",
     PLATFORM_TREASURY: "Hf37zaq9y5okWMxU3sW8Djhv3gd6iTy7mrSMfJcYxwQS",
   },
   MAINNET: {
@@ -25,9 +25,10 @@ export const DEPLOYMENT_INFO = {
   "deployer": "Hf37zaq9y5okWMxU3sW8Djhv3gd6iTy7mrSMfJcYxwQS",
   "programs": {
     "AgentFactory": {
-      "programId": "GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345",
-      "factoryPda": "8N2Fv9CDy6q9a8kER5EP8u4gvSutu3s6wjFuyv7P7Qb9"
+      "programId": "4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU",
+      "factoryPda": "CCxYQHRhg8powaDqWdp1PdcHM2PAJHBUsTaHx1uyDecJ"
     }
   },
-  "timestamp": "2025-10-28T19:00:00.000Z"
+  "timestamp": "2025-11-09T15:00:00.000Z",
+  "features": ["x402-payment-protocol"]
 } as const;

@@ -18,8 +18,8 @@ export interface AgentCreationParams {
   imageUrl?: string;
 }
 
-// Solana Testnet configuration
-const PROGRAM_ID = new PublicKey('GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345');
+// Solana Testnet configuration - X402 Enabled Program
+const PROGRAM_ID = new PublicKey('4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU');
 const PLATFORM_TREASURY = new PublicKey('Hf37zaq9y5okWMxU3sW8Djhv3gd6iTy7mrSMfJcYxwQS');
 
 /**

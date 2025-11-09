@@ -9,16 +9,18 @@ import {
   Share2,
   Star,
   BarChart3,
-  Activity
+  Activity,
+  DollarSign
 } from 'lucide-react';
 import { useAgentDetails, useAgentStats } from '../hooks/useAgents';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { TradingViewChart } from './TradingViewChart';
 import OrderBook from './OrderBook';
-import AgentChat from './AgentChat'; 
+import AgentChat from './AgentChat';
 import { useGraduationStatus } from '../hooks/useGraduationStatus';
 import { BondingCurveProgress } from './BondingCurveProgress';
 import { useChartData } from '../hooks/useChartData';
+import { X402PaymentPanel } from './X402PaymentPanel';
 
 
 const AgentDetail: React.FC = () => {
@@ -26,7 +28,7 @@ const AgentDetail: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'trading' | 'activity' | 'chat'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'trading' | 'activity' | 'chat' | 'x402'>('overview');
   const [copied, setCopied] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -258,12 +260,13 @@ const AgentDetail: React.FC = () => {
             {/* Tabs */}
             <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl">
               <div className="border-b border-[#2a2a2a]">
-                <div className="flex">
+                <div className="flex overflow-x-auto">
                   {[
                     { id: 'overview', label: 'Overview', icon: BarChart3 as any },
                     { id: 'trading', label: 'Trading', icon: TrendingUp as any },
                     { id: 'activity', label: 'Activity', icon: Activity as any },
-                    { id: 'chat', label: 'Chat', icon: MessageCircle as any }
+                    { id: 'chat', label: 'Chat', icon: MessageCircle as any },
+                    { id: 'x402', label: 'X402 Payments', icon: DollarSign as any }
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -397,6 +400,13 @@ const AgentDetail: React.FC = () => {
                       Start Chat
                     </button>
                   </div>
+                )}
+
+                {activeTab === 'x402' && (
+                  <X402PaymentPanel
+                    agentAddress={agent.address || id || ''}
+                    agentName={agent.tokenName || agent.name || ''}
+                  />
                 )}
               </div>
             </div>

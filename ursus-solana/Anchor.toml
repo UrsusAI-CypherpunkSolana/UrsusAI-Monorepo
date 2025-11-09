@@ -4,8 +4,14 @@
 seeds = false
 skip-lint = false
 
+[workspace]
+members = ["programs/*"]
+
+[programs.testnet]
+agent_factory = "4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU"
+
 [programs.devnet]
-agent_factory = "GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345"
+agent_factory = "4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU"
 
 [programs.localnet]
 agent_factory = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"

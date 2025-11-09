@@ -41,25 +41,30 @@ class AIService {
     try {
       const systemPrompt = this.buildSystemPrompt(instructions, userAddress);
 
-      switch (model) {
+      // Default to gemini-pro if model is not supported
+      let actualModel = model;
+      if (!['claude-3', 'claude-3-sonnet-20240229', 'gemini-pro'].includes(model)) {
+        console.log(`⚠️ Model ${model} not supported, using gemini-pro instead`);
+        actualModel = 'gemini-pro';
+      }
+
+      switch (actualModel) {
         // OpenAI modelleri kapalı:
         case 'gpt-4':
         case 'gpt-3.5-turbo':
           throw new Error('OpenAI provider is disabled');
 
         case 'claude-3':
-          case 'claude-3-sonnet-20240229':
-            if (!this.anthropic) throw new Error('Anthropic API key missing');
-            // geçmişi zaten contextualPrompt'a gömdük; userMessage'ı ayrıca göndermiyoruz
-            return await this.generateAnthropicResponse(contextualPrompt, '');
-            
+        case 'claude-3-sonnet-20240229':
+          if (!this.anthropic) throw new Error('Anthropic API key missing');
+          return await this.generateAnthropicResponse(systemPrompt, userMessage);
 
         case 'gemini-pro':
           if (!this.googleAI) throw new Error('Google AI API key missing');
           return await this.generateGoogleAIResponse(systemPrompt, userMessage);
 
         default:
-          throw new Error(`Unsupported model: ${model}`);
+          throw new Error(`Unsupported model: ${actualModel}`);
       }
     } catch (error) {
       console.error('Error generating AI response:', error);
@@ -114,7 +119,8 @@ class AIService {
 
   async generateGoogleAIResponse(systemPrompt, userMessage) {
     try {
-      const model = this.googleAI.getGenerativeModel({ model: 'gemini-pro' });
+      // Use gemini-1.5-flash instead of deprecated gemini-pro
+      const model = this.googleAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const prompt = `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`;
       const result = await model.generateContent(prompt);
       const response = await result.response;

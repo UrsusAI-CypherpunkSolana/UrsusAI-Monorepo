@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use crate::state::AgentFactory;
 
 pub fn handler(ctx: Context<crate::Initialize>, creation_fee: u64) -> Result<()> {
     let factory = &mut ctx.accounts.factory;

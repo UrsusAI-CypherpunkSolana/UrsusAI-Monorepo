@@ -1,13 +1,12 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, MintTo, Transfer};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
-declare_id!("GXMVNLiogZ2vinezusVGDkdDcSk1hJKHtj616iWq3345");
+declare_id!("4m6mpe2jdRiM24ui1Z3AGbCheu1DfQEjmEGtaGKD2ftU");
 
 pub mod instructions;
 pub mod state;
 pub mod errors;
 
-use instructions::*;
 use state::*;
 use errors::*;
 
@@ -59,6 +58,65 @@ pub mod agent_factory {
     /// Update platform fee
     pub fn update_creation_fee(ctx: Context<UpdateFee>, new_fee: u64) -> Result<()> {
         instructions::update_fee::handler(ctx, new_fee)
+    }
+
+    // ============================================================================
+    // X402 Payment Protocol Instructions
+    // ============================================================================
+
+    /// Configure X402 payment settings for an agent
+    pub fn configure_x402(
+        ctx: Context<ConfigureX402>,
+        enabled: bool,
+        min_payment_amount: u64,
+        max_payment_amount: u64,
+        service_timeout_seconds: u64,
+    ) -> Result<()> {
+        instructions::configure_x402::handler(
+            ctx,
+            enabled,
+            min_payment_amount,
+            max_payment_amount,
+            service_timeout_seconds,
+        )
+    }
+
+    /// Update X402 payment settings for an agent
+    pub fn update_x402(
+        ctx: Context<UpdateX402>,
+        enabled: bool,
+        min_payment_amount: u64,
+        max_payment_amount: u64,
+        service_timeout_seconds: u64,
+    ) -> Result<()> {
+        instructions::update_x402::handler(
+            ctx,
+            enabled,
+            min_payment_amount,
+            max_payment_amount,
+            service_timeout_seconds,
+        )
+    }
+
+    /// Pay for an agent service using X402 protocol
+    pub fn pay_for_service(
+        ctx: Context<PayForService>,
+        amount: u64,
+        service_id: String,
+        nonce: u64,
+    ) -> Result<()> {
+        instructions::pay_for_service::handler(ctx, amount, service_id, nonce)
+    }
+
+    /// Call an agent service with payment (Agent-to-Agent interaction)
+    pub fn call_agent_service(
+        ctx: Context<CallAgentService>,
+        amount: u64,
+        service_id: String,
+        nonce: u64,
+        service_params: Vec<u8>,
+    ) -> Result<()> {
+        instructions::call_agent_service::handler(ctx, amount, service_id, nonce, service_params)
     }
 }
 
@@ -247,5 +305,143 @@ pub struct UpdateFee<'info> {
     pub factory: Account<'info, AgentFactory>,
 
     pub authority: Signer<'info>,
+}
+
+// ============================================================================
+// X402 Payment Protocol Instructions
+// ============================================================================
+
+#[derive(Accounts)]
+#[instruction(enabled: bool, min_payment_amount: u64, max_payment_amount: u64, service_timeout_seconds: u64)]
+pub struct ConfigureX402<'info> {
+    #[account(mut)]
+    pub agent: Account<'info, Agent>,
+
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + X402Config::INIT_SPACE,
+        seeds = [b"x402_config", agent.key().as_ref()],
+        bump
+    )]
+    pub x402_config: Account<'info, X402Config>,
+
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(enabled: bool, min_payment_amount: u64, max_payment_amount: u64, service_timeout_seconds: u64)]
+pub struct UpdateX402<'info> {
+    #[account(mut)]
+    pub agent: Account<'info, Agent>,
+
+    #[account(
+        mut,
+        seeds = [b"x402_config", agent.key().as_ref()],
+        bump = x402_config.bump
+    )]
+    pub x402_config: Account<'info, X402Config>,
+
+    #[account(mut)]
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+#[instruction(amount: u64, service_id: String, nonce: u64)]
+pub struct PayForService<'info> {
+    #[account(mut)]
+    pub agent: Account<'info, Agent>,
+
+    #[account(
+        mut,
+        seeds = [b"x402_config", agent.key().as_ref()],
+        bump = x402_config.bump
+    )]
+    pub x402_config: Account<'info, X402Config>,
+
+    #[account(
+        init,
+        payer = payer,
+        space = 8 + X402PaymentRecord::INIT_SPACE,
+        seeds = [
+            b"payment_record",
+            agent.key().as_ref(),
+            payer.key().as_ref(),
+            &nonce.to_le_bytes()
+        ],
+        bump
+    )]
+    pub payment_record: Account<'info, X402PaymentRecord>,
+
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    /// Payer's USDC token account
+    #[account(mut)]
+    pub payer_token_account: Account<'info, TokenAccount>,
+
+    /// Recipient's USDC token account
+    #[account(
+        mut,
+        constraint = recipient_token_account.owner == x402_config.payment_recipient @ X402Error::InvalidServiceId
+    )]
+    pub recipient_token_account: Account<'info, TokenAccount>,
+
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(amount: u64, service_id: String, nonce: u64, service_params: Vec<u8>)]
+pub struct CallAgentService<'info> {
+    #[account(mut)]
+    pub caller_agent: Account<'info, Agent>,
+
+    #[account(mut)]
+    pub target_agent: Account<'info, Agent>,
+
+    #[account(
+        mut,
+        seeds = [b"x402_config", target_agent.key().as_ref()],
+        bump = target_x402_config.bump
+    )]
+    pub target_x402_config: Account<'info, X402Config>,
+
+    #[account(
+        init,
+        payer = caller_authority,
+        space = 8 + X402PaymentRecord::INIT_SPACE,
+        seeds = [
+            b"payment_record",
+            target_agent.key().as_ref(),
+            caller_agent.key().as_ref(),
+            &nonce.to_le_bytes()
+        ],
+        bump
+    )]
+    pub payment_record: Account<'info, X402PaymentRecord>,
+
+    #[account(
+        mut,
+        constraint = caller_authority.key() == caller_agent.creator @ X402Error::InvalidServiceId
+    )]
+    pub caller_authority: Signer<'info>,
+
+    /// Caller's USDC token account
+    #[account(mut)]
+    pub caller_token_account: Account<'info, TokenAccount>,
+
+    /// Target's USDC token account
+    #[account(
+        mut,
+        constraint = target_token_account.owner == target_x402_config.payment_recipient @ X402Error::InvalidServiceId
+    )]
+    pub target_token_account: Account<'info, TokenAccount>,
+
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
 

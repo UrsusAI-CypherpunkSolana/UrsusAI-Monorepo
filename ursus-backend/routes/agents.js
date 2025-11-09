@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 const AIService = require('../services/AIService');
 const AgentCreatorService = require('../services/AgentCreatorService');
 const SolanaBlockchainService = require('../services/SolanaBlockchainService');
+const X402Service = require('../services/X402Service');
+const { checkX402Payment } = require('../middleware/x402Middleware');
 const Agent = require('../models/Agent');
 const router = express.Router();
 
@@ -34,6 +36,7 @@ function isSolanaAddress(address) {
 // Create singleton instances
 const solanaService = new SolanaBlockchainService();
 const agentCreatorService = new AgentCreatorService();
+const x402Service = new X402Service();
 
 // Initialize AgentUpdater (DISABLED - Using Solana Event Listener instead)
 let agentUpdater = null;
@@ -1344,5 +1347,57 @@ router.post('/:address/reset-volume', async (req, res) => {
 
 // Export the helper function for use in other routes
 router.updateAgentVolume = updateAgentVolume;
+
+// ============================================
+// X402 PAID SERVICES
+// ============================================
+
+/**
+ * POST /api/agents/:agentAddress/x402/service
+ * Execute a paid X402 service
+ */
+router.post('/:agentAddress/x402/service', checkX402Payment, async (req, res) => {
+  try {
+    const { agentAddress } = req.params;
+    const { serviceId, paymentSignature } = req.body;
+
+    if (!serviceId) {
+      return res.status(400).json({ error: 'Service ID is required' });
+    }
+
+    if (!paymentSignature) {
+      return res.status(400).json({ error: 'Payment signature is required' });
+    }
+
+    // Get agent data from database (case-insensitive search)
+    const agent = await Agent.findOne({
+      contractAddress: new RegExp(`^${agentAddress}$`, 'i')
+    });
+
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+
+    // Execute the paid service
+    const result = await x402Service.executeService(serviceId, {
+      name: agent.name,
+      model: agent.model,
+      instructions: agent.instructions,
+      category: agent.category
+    }, {
+      signature: paymentSignature,
+      verified: req.x402Payment?.verified || false
+    });
+
+    console.log('✅ X402 Service Result:', JSON.stringify(result, null, 2));
+    res.json(result);
+  } catch (error) {
+    console.error('Error executing X402 service:', error);
+    res.status(500).json({
+      error: 'Failed to execute service',
+      message: error.message
+    });
+  }
+});
 
 module.exports = router;
